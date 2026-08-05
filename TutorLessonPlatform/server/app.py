@@ -32,7 +32,8 @@ except ImportError:
     import tlsutil  # type: ignore
 
 HOST = os.environ.get("HOST", "0.0.0.0")
-PORT = int(os.environ.get("PORT", "3443"))
+USE_TLS = os.environ.get("USE_TLS", "1").strip().lower() not in {"0", "false", "no", "off"}
+PORT = int(os.environ.get("PORT", "3443" if USE_TLS else "3000"))
 HTTP_REDIRECT_PORT = int(os.environ.get("HTTP_PORT", "3000"))
 ROOT = ROOT_DIR / "public"
 ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -587,7 +588,7 @@ def build_http_response(
         return http_message(204, b"", content_type="text/plain", keep_alive=keep_alive)
 
     if path == "/api/health" and method == "GET":
-        return json_message(200, {"ok": True, "service": "uroklive", "tls": True}, keep_alive)
+        return json_message(200, {"ok": True, "service": "uroklive", "tls": USE_TLS}, keep_alive)
 
     # ---- Auth ----
     if path == "/api/auth/register" and method == "POST":
@@ -847,7 +848,6 @@ async def main() -> None:
         raise SystemExit(f"Папка frontend не найдена: {ROOT}")
 
     db.init_db()
-    ssl_ctx = tlsutil.make_ssl_context()
 
     for rel in (
         "index.html",
@@ -862,18 +862,24 @@ async def main() -> None:
     ):
         load_static(rel)
 
-    tls_server = await asyncio.start_server(client_connected, HOST, PORT, ssl=ssl_ctx)
-    redirect_server = await asyncio.start_server(http_redirect_client, HOST, HTTP_REDIRECT_PORT)
-
-    log(f"УрокLive HTTPS: https://127.0.0.1:{PORT}")
-    log(f"HTTP redirect: http://127.0.0.1:{HTTP_REDIRECT_PORT} -> https")
-    log("Примите самоподписанный сертификат в браузере при первом заходе.")
-
-    async with tls_server, redirect_server:
-        await asyncio.gather(
-            tls_server.serve_forever(),
-            redirect_server.serve_forever(),
-        )
+    if USE_TLS:
+        ssl_ctx = tlsutil.make_ssl_context()
+        tls_server = await asyncio.start_server(client_connected, HOST, PORT, ssl=ssl_ctx)
+        redirect_server = await asyncio.start_server(http_redirect_client, HOST, HTTP_REDIRECT_PORT)
+        log(f"УрокLive HTTPS: https://127.0.0.1:{PORT}")
+        log(f"HTTP redirect: http://127.0.0.1:{HTTP_REDIRECT_PORT} -> https")
+        log("Примите самоподписанный сертификат в браузере при первом заходе.")
+        async with tls_server, redirect_server:
+            await asyncio.gather(
+                tls_server.serve_forever(),
+                redirect_server.serve_forever(),
+            )
+    else:
+        server = await asyncio.start_server(client_connected, HOST, PORT)
+        log(f"УрокLive HTTP: http://127.0.0.1:{PORT}")
+        log("Режим без TLS (USE_TLS=0). Для продакшена позже включите HTTPS.")
+        async with server:
+            await server.serve_forever()
 
 
 if __name__ == "__main__":
