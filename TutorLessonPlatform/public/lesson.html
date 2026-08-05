@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Урок — УрокLive</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="page-lesson">
+  <div id="permission-gate" class="gate" hidden>
+    <div class="gate-card">
+      <h2>Нужен доступ к микрофону</h2>
+      <p>Нажмите кнопку ниже — браузер запросит разрешение для связи со звуком.</p>
+      <button id="allow-media" type="button" class="btn btn-primary">
+        <span class="btn-label">Разрешить и войти</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+      <button id="skip-media" type="button" class="btn btn-ghost">Войти без камеры</button>
+      <p id="gate-error" class="form-error" hidden></p>
+    </div>
+  </div>
+
+  <header class="lesson-bar">
+    <div class="lesson-meta">
+      <a class="brand brand-sm" href="/">УрокLive</a>
+      <div>
+        <h1 id="lesson-title">Урок</h1>
+        <p class="lesson-sub">
+          Код: <strong id="room-code">————</strong>
+          <button type="button" id="copy-code" class="linkish" title="Скопировать код">скопировать</button>
+          · <span id="self-label">—</span>
+        </p>
+      </div>
+    </div>
+    <div class="lesson-actions">
+      <button type="button" id="toggle-mic" class="btn btn-ghost" aria-pressed="true" title="Микрофон">Микрофон вкл</button>
+      <button type="button" id="toggle-cam" class="btn btn-ghost" aria-pressed="true" title="Камера">Камера вкл</button>
+      <a href="/" class="btn btn-danger">Выйти</a>
+    </div>
+  </header>
+
+  <div class="lesson-layout">
+    <aside class="tools" aria-label="Инструменты доски">
+      <button type="button" class="tool is-active" data-tool="pen" title="Карандаш">✎</button>
+      <button type="button" class="tool tool-eraser" data-tool="eraser" title="Ластик">
+        <span class="eraser-icon" aria-hidden="true"></span>
+        <span class="tool-caption">ластик</span>
+      </button>
+      <label class="color-wrap" title="Цвет">
+        <input type="color" id="stroke-color" value="#1f3d2b" />
+      </label>
+      <label class="width-wrap" title="Толщина">
+        <span id="width-value" class="width-value">4</span>
+        <input type="range" id="stroke-width" min="2" max="24" value="4" />
+      </label>
+      <button type="button" id="clear-board" class="tool tool-danger" title="Очистить доску">✕</button>
+      <ul id="people" class="people" aria-label="Участники"></ul>
+    </aside>
+
+    <main class="board-wrap">
+      <canvas id="board" width="1600" height="1000"></canvas>
+      <p id="board-status" class="board-status">Подключение…</p>
+    </main>
+
+    <aside class="video-dock" aria-label="Видеосвязь">
+      <div class="video-tile remote">
+        <video id="remote-video" autoplay playsinline muted></video>
+        <audio id="remote-audio" autoplay playsinline></audio>
+        <span id="remote-label" class="video-label">Ожидание собеседника…</span>
+        <button type="button" id="unmute-remote" class="btn btn-primary btn-sm unmute-btn">Включить микрофон и звук</button>
+      </div>
+      <div class="video-tile local">
+        <video id="local-video" autoplay playsinline muted></video>
+        <span class="video-label">Вы</span>
+      </div>
+      <div class="chat">
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+        <form id="chat-form" class="chat-form">
+          <input id="chat-input" type="text" maxlength="500" placeholder="Сообщение…" autocomplete="off" />
+          <button type="submit" class="btn btn-primary btn-sm">→</button>
+        </form>
+      </div>
+    </aside>
+  </div>
+
+  <script src="/js/socket.js"></script>
+  <script src="/js/whiteboard.js"></script>
+  <script src="/js/webrtc.js"></script>
+  <script src="/js/lesson.js"></script>
+</body>
+</html>

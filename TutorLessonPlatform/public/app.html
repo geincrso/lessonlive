@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кабинет — УрокLive</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="page-cabinet">
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <header class="lesson-bar">
+    <div class="lesson-meta">
+      <a class="brand brand-sm" href="/">УрокLive</a>
+      <div>
+        <h1>Кабинет</h1>
+        <p class="lesson-sub"><span id="me-label">—</span></p>
+      </div>
+    </div>
+    <div class="lesson-actions">
+      <a class="btn btn-ghost" href="/">Гостевой урок</a>
+      <button type="button" id="logout-btn" class="btn btn-danger">Выйти</button>
+    </div>
+  </header>
+
+  <div class="cabinet-layout">
+    <aside class="cabinet-side">
+      <div class="cabinet-block">
+        <h2>Найти друга</h2>
+        <form id="search-form" class="search-form">
+          <input id="search-input" type="search" placeholder="Логин или имя" maxlength="40" />
+          <button class="btn btn-primary btn-sm" type="submit">Найти</button>
+        </form>
+        <ul id="search-results" class="people-list"></ul>
+      </div>
+
+      <div class="cabinet-block">
+        <h2>Заявки</h2>
+        <ul id="incoming-list" class="people-list"></ul>
+        <p id="incoming-empty" class="muted">Нет входящих заявок</p>
+      </div>
+
+      <div class="cabinet-block">
+        <h2>Друзья</h2>
+        <ul id="friends-list" class="people-list"></ul>
+        <p id="friends-empty" class="muted">Пока нет друзей</p>
+      </div>
+    </aside>
+
+    <main class="cabinet-main">
+      <div id="chat-empty" class="cabinet-placeholder">
+        <h2>Выберите друга</h2>
+        <p>Откройте переписку, начните урок с доской или аудиосозвон.</p>
+      </div>
+
+      <section id="chat-panel" class="chat-panel" hidden>
+        <header class="chat-head">
+          <div>
+            <h2 id="chat-title">Друг</h2>
+            <p id="chat-sub" class="muted"></p>
+          </div>
+          <div class="chat-actions">
+            <button type="button" id="start-lesson" class="btn btn-primary btn-sm">Урок</button>
+            <button type="button" id="start-audio" class="btn btn-ghost btn-sm">Аудиозвонок</button>
+          </div>
+        </header>
+        <div id="dm-log" class="chat-log dm-log"></div>
+        <form id="dm-form" class="chat-form">
+          <input id="dm-input" type="text" maxlength="2000" placeholder="Сообщение другу…" autocomplete="off" />
+          <button class="btn btn-primary btn-sm" type="submit">→</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div id="call-modal" class="gate" hidden>
+    <div class="gate-card">
+      <h2 id="call-modal-title">Входящий звонок</h2>
+      <p id="call-modal-text"></p>
+      <div class="chat-actions">
+        <button type="button" id="call-accept" class="btn btn-primary">Принять</button>
+        <button type="button" id="call-decline" class="btn btn-ghost">Отклонить</button>
+      </div>
+    </div>
+  </div>
+
+  <p id="toast" class="board-status"></p>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/socket.js"></script>
+  <script src="/js/cabinet.js"></script>
+</body>
+</html>

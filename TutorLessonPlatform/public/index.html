@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>УрокLive — онлайн-уроки с доской</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="page-home">
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/">УрокLive</a>
+    <div class="lesson-actions">
+      <a id="nav-cabinet" class="btn btn-ghost" href="/auth.html">Войти</a>
+      <a class="btn btn-primary" href="/auth.html">Регистрация</a>
+    </div>
+  </header>
+
+  <main class="home">
+    <section class="home-hero">
+      <p class="brand-mark">УрокLive</p>
+      <h1>Уроки с видео и общей доской</h1>
+      <p class="lede">Создайте аккаунт для друзей и чата — или начните гостевой урок по коду прямо сейчас.</p>
+    </section>
+
+    <section class="entry" aria-label="Вход в урок">
+      <div class="entry-tabs" role="tablist">
+        <button type="button" class="tab is-active" data-tab="create" role="tab" aria-selected="true">Создать урок</button>
+        <button type="button" class="tab" data-tab="join" role="tab" aria-selected="false">Войти по коду</button>
+      </div>
+
+      <form id="create-form" class="entry-panel is-active" autocomplete="off">
+        <label>
+          Ваше имя
+          <input id="create-name" name="name" type="text" maxlength="40" placeholder="Анна" required />
+        </label>
+        <label>
+          Название урока
+          <input id="create-title" name="title" type="text" maxlength="80" placeholder="Алгебра: квадратные уравнения" required />
+        </label>
+        <p class="hint">Гостевой режим: вы войдёте как репетитор и получите код.</p>
+        <button type="submit" class="btn btn-primary" id="create-submit">
+          <span class="btn-label">Создать комнату</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+        <p id="create-error" class="form-error" hidden></p>
+      </form>
+
+      <form id="join-form" class="entry-panel" autocomplete="off" hidden>
+        <label>
+          Ваше имя
+          <input id="join-name" name="name" type="text" maxlength="40" placeholder="Илья" required />
+        </label>
+        <label>
+          Код комнаты
+          <input id="join-code" name="code" type="text" maxlength="8" placeholder="ABC123" required class="code-input" />
+        </label>
+        <label class="role-pick">
+          Кто вы?
+          <select id="join-role" name="role">
+            <option value="student">Ученик</option>
+            <option value="tutor">Репетитор</option>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-primary" id="join-submit">
+          <span class="btn-label">Войти в урок</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+        <p id="join-error" class="form-error" hidden></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/home.js"></script>
+  <script>
+    Auth.requireUser().then((user) => {
+      const link = document.getElementById('nav-cabinet');
+      if (user) {
+        link.textContent = 'Кабинет';
+        link.href = '/app.html';
+      }
+    });
+  </script>
+</body>
+</html>

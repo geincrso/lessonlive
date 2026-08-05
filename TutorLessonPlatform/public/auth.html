@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход — УрокLive</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="page-home">
+  <div class="atmosphere" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/">УрокLive</a>
+    <a class="btn btn-ghost" href="/">На главную</a>
+  </header>
+
+  <main class="home home-narrow">
+    <section class="home-hero">
+      <p class="brand-mark">УрокLive</p>
+      <h1>Аккаунт</h1>
+      <p class="lede">Зарегистрируйтесь, чтобы добавлять друзей, писать сообщения и звонить.</p>
+    </section>
+
+    <section class="entry" aria-label="Авторизация">
+      <div class="entry-tabs" role="tablist">
+        <button type="button" class="tab is-active" data-tab="login">Вход</button>
+        <button type="button" class="tab" data-tab="register">Регистрация</button>
+      </div>
+
+      <form id="login-form" class="entry-panel is-active" autocomplete="on">
+        <label>Логин <input id="login-login" required maxlength="32" placeholder="anna_tutor" /></label>
+        <label>Пароль <input id="login-password" type="password" required minlength="6" /></label>
+        <button class="btn btn-primary" type="submit">Войти</button>
+        <p id="login-error" class="form-error" hidden></p>
+      </form>
+
+      <form id="register-form" class="entry-panel" hidden autocomplete="on">
+        <label>Логин <input id="reg-login" required maxlength="32" placeholder="anna_tutor" /></label>
+        <label>Имя <input id="reg-name" required maxlength="40" placeholder="Анна" /></label>
+        <label>Пароль <input id="reg-password" type="password" required minlength="6" /></label>
+        <p class="hint">Логин: латиница, цифры и _ , от 3 символов.</p>
+        <button class="btn btn-primary" type="submit">Создать аккаунт</button>
+        <p id="reg-error" class="form-error" hidden></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    (async function () {
+      const user = await Auth.requireUser();
+      if (user) {
+        location.href = '/app.html';
+        return;
+      }
+
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const loginError = document.getElementById('login-error');
+      const regError = document.getElementById('reg-error');
+      const tabs = document.querySelectorAll('.tab');
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((t) => t.classList.toggle('is-active', t === tab));
+          const target = tab.dataset.tab;
+          loginForm.hidden = target !== 'login';
+          registerForm.hidden = target !== 'register';
+          loginError.hidden = true;
+          regError.hidden = true;
+        });
+      });
+
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        loginError.hidden = true;
+        try {
+          const data = await Auth.api('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({
+              login: document.getElementById('login-login').value.trim(),
+              password: document.getElementById('login-password').value,
+            }),
+          });
+          Auth.setSession(data);
+          location.href = '/app.html';
+        } catch (error) {
+          loginError.hidden = false;
+          loginError.textContent = error.message;
+        }
+      });
+
+      registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        regError.hidden = true;
+        try {
+          const data = await Auth.api('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+              login: document.getElementById('reg-login').value.trim(),
+              name: document.getElementById('reg-name').value.trim(),
+              password: document.getElementById('reg-password').value,
+            }),
+          });
+          Auth.setSession(data);
+          location.href = '/app.html';
+        } catch (error) {
+          regError.hidden = false;
+          regError.textContent = error.message;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
